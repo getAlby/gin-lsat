@@ -35,7 +35,7 @@ func ginLsatHandler(lsatmiddleware *ginlsat.GinLsat) *gin.Engine {
 	router.Use(lsatmiddleware.Handler)
 
 	router.GET("/protected", func(c *gin.Context) {
-		lsatInfo := c.Value("LSAT").(*lsat.LsatInfo)
+		lsatInfo := c.Value("L402").(*lsat.LsatInfo)
 		if lsatInfo.Type == lsat.LSAT_TYPE_FREE {
 			c.JSON(http.StatusAccepted, gin.H{
 				"code":    http.StatusAccepted,
@@ -111,13 +111,13 @@ func TestGinLsatWithLNURLConfig(t *testing.T) {
 			assert.Equal(t, lsat.PAYMENT_REQUIRED_MESSAGE, message)
 			assert.Equal(t, http.StatusPaymentRequired, res.Code)
 
-			assert.True(t, strings.HasPrefix(res.HeaderMap.Get("Www-Authenticate"), "LSAT macaroon="))
+			assert.True(t, strings.HasPrefix(res.HeaderMap.Get("Www-Authenticate"), "L402 macaroon="))
 			assert.True(t, strings.Contains(res.HeaderMap.Get("Www-Authenticate"), "invoice="))
 		})
 
 	router.GET("/protected").
 		SetHeader(gofight.H{
-			"Authorization": fmt.Sprintf("LSAT %s:%s", TEST_MACAROON_VALID, TEST_PREIMAGE_VALID),
+			"Authorization": fmt.Sprintf("L402 %s:%s", TEST_MACAROON_VALID, TEST_PREIMAGE_VALID),
 		}).
 		Run(handler, func(res gofight.HTTPResponse, req gofight.HTTPRequest) {
 			message := fmt.Sprint(gjson.Get(res.Body.String(), "message"))
@@ -128,7 +128,7 @@ func TestGinLsatWithLNURLConfig(t *testing.T) {
 
 	router.GET("/protected").
 		SetHeader(gofight.H{
-			"Authorization": fmt.Sprintf("LSAT %s:%s", TEST_MACAROON_VALID, TEST_PREIMAGE_INVALID),
+			"Authorization": fmt.Sprintf("L402 %s:%s", TEST_MACAROON_VALID, TEST_PREIMAGE_INVALID),
 		}).
 		Run(handler, func(res gofight.HTTPResponse, req gofight.HTTPRequest) {
 			message := fmt.Sprint(gjson.Get(res.Body.String(), "message"))
@@ -142,7 +142,7 @@ func TestGinLsatWithLNURLConfig(t *testing.T) {
 
 	router.GET("/protected").
 		SetHeader(gofight.H{
-			"Authorization": fmt.Sprintf("LSAT %s:%s", TEST_MACAROON_WITHOUT_CAVEATS, TEST_MACAROON_WITHOUT_CAVEATS_PREIMAGE),
+			"Authorization": fmt.Sprintf("L402 %s:%s", TEST_MACAROON_WITHOUT_CAVEATS, TEST_MACAROON_WITHOUT_CAVEATS_PREIMAGE),
 		}).
 		Run(handler, func(res gofight.HTTPResponse, req gofight.HTTPRequest) {
 			message := fmt.Sprint(gjson.Get(res.Body.String(), "message"))
@@ -208,13 +208,13 @@ func TestGinLsatWithLNDConfig(t *testing.T) {
 			assert.Equal(t, lsat.PAYMENT_REQUIRED_MESSAGE, message)
 			assert.Equal(t, http.StatusPaymentRequired, res.Code)
 
-			assert.True(t, strings.HasPrefix(res.HeaderMap.Get("Www-Authenticate"), "LSAT macaroon="))
+			assert.True(t, strings.HasPrefix(res.HeaderMap.Get("Www-Authenticate"), "L402 macaroon="))
 			assert.True(t, strings.Contains(res.HeaderMap.Get("Www-Authenticate"), "invoice="))
 		})
 
 	router.GET("/protected").
 		SetHeader(gofight.H{
-			"Authorization": fmt.Sprintf("LSAT %s:%s", TEST_MACAROON_VALID, TEST_PREIMAGE_VALID),
+			"Authorization": fmt.Sprintf("L402 %s:%s", TEST_MACAROON_VALID, TEST_PREIMAGE_VALID),
 		}).
 		Run(handler, func(res gofight.HTTPResponse, req gofight.HTTPRequest) {
 			message := fmt.Sprint(gjson.Get(res.Body.String(), "message"))
@@ -225,7 +225,7 @@ func TestGinLsatWithLNDConfig(t *testing.T) {
 
 	router.GET("/protected").
 		SetHeader(gofight.H{
-			"Authorization": fmt.Sprintf("LSAT %s:%s", TEST_MACAROON_VALID, TEST_PREIMAGE_INVALID),
+			"Authorization": fmt.Sprintf("L402 %s:%s", TEST_MACAROON_VALID, TEST_PREIMAGE_INVALID),
 		}).
 		Run(handler, func(res gofight.HTTPResponse, req gofight.HTTPRequest) {
 			message := fmt.Sprint(gjson.Get(res.Body.String(), "message"))
@@ -239,7 +239,7 @@ func TestGinLsatWithLNDConfig(t *testing.T) {
 
 	router.GET("/protected").
 		SetHeader(gofight.H{
-			"Authorization": fmt.Sprintf("LSAT %s:%s", TEST_MACAROON_WITHOUT_CAVEATS, TEST_MACAROON_WITHOUT_CAVEATS_PREIMAGE),
+			"Authorization": fmt.Sprintf("L402 %s:%s", TEST_MACAROON_WITHOUT_CAVEATS, TEST_MACAROON_WITHOUT_CAVEATS_PREIMAGE),
 		}).
 		Run(handler, func(res gofight.HTTPResponse, req gofight.HTTPRequest) {
 			message := fmt.Sprint(gjson.Get(res.Body.String(), "message"))

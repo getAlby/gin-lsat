@@ -63,17 +63,32 @@ func main() {
 	if err != nil {
 		log.Fatal("Failed to load .env file")
 	}
-	lnClientConfig := &ln.LNClientConfig{
-		LNClientType: os.Getenv("LN_CLIENT_TYPE"),
-		LNDConfig: ln.LNDoptions{
-			Address:     os.Getenv("LND_ADDRESS"),
-			MacaroonHex: os.Getenv("MACAROON_HEX"),
-		},
-		LNURLConfig: ln.LNURLoptions{
-			Address: os.Getenv("LNURL_ADDRESS"),
-		},
-		RootKey: []byte(os.Getenv("ROOT_KEY")),
+
+	var lnClientConfig *ln.LNClientConfig
+	clientType := os.Getenv("LN_CLIENT_TYPE")
+
+	switch clientType {
+	case "LND":
+		lnClientConfig = &ln.LNClientConfig{
+			LNClientType: clientType,
+			LNDConfig: ln.LNDoptions{
+				Address:     os.Getenv("LND_ADDRESS"),
+				MacaroonHex: os.Getenv("MACAROON_HEX"),
+			},
+			RootKey: []byte(os.Getenv("ROOT_KEY")),
+		}
+	case "LNURL":
+		lnClientConfig = &ln.LNClientConfig{
+			LNClientType: clientType,
+			LNURLConfig: ln.LNURLoptions{
+				Address: os.Getenv("LNURL_ADDRESS"),
+			},
+			RootKey: []byte(os.Getenv("ROOT_KEY")),
+		}
+	default:
+		log.Fatalf("Invalid LN_CLIENT_TYPE: %s. Must be either 'LND' or 'LNURL'.", clientType)
 	}
+
 	fr := &FiatRateConfig{
 		Currency: "USD",
 		Amount:   0.01,
@@ -89,7 +104,7 @@ func main() {
 	router.Use(ginlsatmiddleware.Handler)
 
 	router.GET("/protected", func(c *gin.Context) {
-		lsatInfo := c.Value("LSAT").(*lsat.LsatInfo)
+		lsatInfo := c.Value(lsat.LSAT_HEADER).(*lsat.LsatInfo)
 		if lsatInfo.Type == lsat.LSAT_TYPE_FREE {
 			c.JSON(http.StatusAccepted, gin.H{
 				"code":    http.StatusAccepted,
@@ -108,7 +123,7 @@ func main() {
 		}
 	})
 	router.GET("/protected/2", func(c *gin.Context) {
-		lsatInfo := c.Value("LSAT").(*lsat.LsatInfo)
+		lsatInfo := c.Value(lsat.LSAT_HEADER).(*lsat.LsatInfo)
 		if lsatInfo.Type == lsat.LSAT_TYPE_FREE {
 			c.JSON(http.StatusAccepted, gin.H{
 				"code":    http.StatusAccepted,

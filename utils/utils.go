@@ -13,20 +13,20 @@ import (
 
 func ParseLsatHeader(authField string) (*macaroon.Macaroon, lntypes.Preimage, error) {
 	// A typical authField
-	// Authorization: LSAT AGIAJEemVQUTEyNCR0exk7ek90Cg==:1234abcd1234abcd1234abcd
+	// Authorization: L402 AGIAJEemVQUTEyNCR0exk7ek90Cg==:1234abcd1234abcd1234abcd
 	if len(authField) == 0 {
 		return nil, lntypes.Preimage{}, fmt.Errorf("Authorization Field not present")
 	}
 	// Trim leading and trailing spaces
 	authField = strings.TrimSpace(authField)
 	if len(authField) == 0 {
-		return nil, lntypes.Preimage{}, fmt.Errorf("LSAT Header is not present")
+		return nil, lntypes.Preimage{}, fmt.Errorf("L402 Header is not present")
 	}
-	// Trim LSAT prefix
-	token := strings.TrimPrefix(authField, "LSAT ")
+	// Trim L402 prefix
+	token := strings.TrimPrefix(authField, "L402 ")
 	splitted := strings.Split(token, ":")
 	if len(splitted) != 2 {
-		return nil, lntypes.Preimage{}, fmt.Errorf("LSAT does not have the right format: %s", authField)
+		return nil, lntypes.Preimage{}, fmt.Errorf("L402 does not have the right format: %s", authField)
 	}
 	macaroonString := strings.TrimSpace(splitted[0])
 	preimageString := strings.TrimSpace(splitted[1])

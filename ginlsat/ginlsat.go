@@ -37,7 +37,7 @@ func (lsatmiddleware *GinLsat) Handler(c *gin.Context) {
 			return
 		}
 		// Set LSAT type Free if client does not support LSAT
-		c.Set("LSAT", &lsat.LsatInfo{
+		c.Set(lsat.LSAT_HEADER, &lsat.LsatInfo{
 			Type: lsat.LSAT_TYPE_FREE,
 		})
 		return
@@ -46,7 +46,7 @@ func (lsatmiddleware *GinLsat) Handler(c *gin.Context) {
 	err = lsat.VerifyLSAT(mac, caveats, lsatmiddleware.Middleware.RootKey, preimage)
 	if err != nil {
 		//not a valid LSAT
-		c.Set("LSAT", &lsat.LsatInfo{
+		c.Set(lsat.LSAT_HEADER, &lsat.LsatInfo{
 			Type:  lsat.LSAT_TYPE_ERROR,
 			Error: err,
 		})
@@ -55,13 +55,13 @@ func (lsatmiddleware *GinLsat) Handler(c *gin.Context) {
 	//LSAT verification ok, mark client as having paid
 	macaroonId, err := macaroonutils.GetMacIdFromMacaroon(mac)
 	if err != nil {
-		c.Set("LSAT", &lsat.LsatInfo{
+		c.Set(lsat.LSAT_HEADER, &lsat.LsatInfo{
 			Type:  lsat.LSAT_TYPE_ERROR,
 			Error: err,
 		})
 		return
 	}
-	c.Set("LSAT", &lsat.LsatInfo{
+	c.Set(lsat.LSAT_HEADER, &lsat.LsatInfo{
 		Type:        lsat.LSAT_TYPE_PAID,
 		Preimage:    preimage,
 		PaymentHash: macaroonId.PaymentHash,
@@ -74,14 +74,14 @@ func (lsatmiddleware *GinLsat) SetLSATHeader(c *gin.Context, caveats []caveat.Ca
 	ctx := context.Background()
 	lnInvoice := lnrpc.Invoice{
 		Value: lsatmiddleware.Middleware.AmountFunc(c.Request),
-		Memo:  "LSAT",
+		Memo:  lsat.LSAT_HEADER,
 	}
 	LNClientConn := &ln.LNClientConn{
 		LNClient: lsatmiddleware.Middleware.LNClient,
 	}
 	invoice, paymentHash, err := LNClientConn.GenerateInvoice(ctx, lnInvoice, c.Request)
 	if err != nil {
-		c.Set("LSAT", &lsat.LsatInfo{
+		c.Set(lsat.LSAT_HEADER, &lsat.LsatInfo{
 			Type:  lsat.LSAT_TYPE_ERROR,
 			Error: err,
 		})
@@ -89,13 +89,13 @@ func (lsatmiddleware *GinLsat) SetLSATHeader(c *gin.Context, caveats []caveat.Ca
 	}
 	macaroonString, err := macaroonutils.GetMacaroonAsString(paymentHash, caveats, lsatmiddleware.Middleware.RootKey)
 	if err != nil {
-		c.Set("LSAT", &lsat.LsatInfo{
+		c.Set(lsat.LSAT_HEADER, &lsat.LsatInfo{
 			Type:  lsat.LSAT_TYPE_ERROR,
 			Error: err,
 		})
 		return
 	}
-	c.Writer.Header().Set("WWW-Authenticate", fmt.Sprintf("LSAT macaroon=%s, invoice=%s", macaroonString, invoice))
+	c.Writer.Header().Set("WWW-Authenticate", fmt.Sprintf("%s macaroon=%s, invoice=%s", lsat.LSAT_HEADER, macaroonString, invoice))
 	c.AbortWithStatusJSON(http.StatusPaymentRequired, gin.H{
 		"code":    http.StatusPaymentRequired,
 		"message": lsat.PAYMENT_REQUIRED_MESSAGE,

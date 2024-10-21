@@ -14,7 +14,7 @@ const (
 	LSAT_TYPE_FREE   = "FREE"
 	LSAT_TYPE_PAID   = "PAID"
 	LSAT_TYPE_ERROR  = "ERROR"
-	LSAT_HEADER      = "LSAT"
+	LSAT_HEADER      = "L402"
 	LSAT_HEADER_NAME = "Accept-Authenticate"
 )
 

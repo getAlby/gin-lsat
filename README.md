@@ -1,12 +1,12 @@
 # LSAT-Middleware
 
-A middleware library for [Gin](https://github.com/gin-gonic/gin) and [Echo](https://echo.labstack.com/) framework that uses [LSAT](https://lsat.tech/) (a protocol standard for authentication and paid APIs) and provides handler functions to accept microtransactions before serving ad-free content or any paid APIs.
+A middleware library for [Gin](https://github.com/gin-gonic/gin) and [Echo](https://echo.labstack.com/) framework that uses [L402, formerly known as LSAT](https://docs.lightning.engineering/the-lightning-network/l402) (a protocol standard for authentication and paid APIs) and provides handler functions to accept microtransactions before serving ad-free content or any paid APIs.
 
 The middleware:-
 
 1. Checks the preference of the user whether they need paid content or free content.
-2. Verify the LSAT before serving paid content.
-3. Send macaroon and invoice if the user prefers paid content and fails to present a valid LSAT.
+2. Verify the L402 before serving paid content.
+3. Send macaroon and invoice if the user prefers paid content and fails to present a valid L402.
 
 <img src="https://user-images.githubusercontent.com/44242169/186736015-f956dfe1-cba0-4dc3-9755-9d22cb1c7e77.jpg" width="700">
 
