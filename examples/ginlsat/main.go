@@ -104,7 +104,7 @@ func main() {
 	router.Use(ginlsatmiddleware.Handler)
 
 	router.GET("/protected", func(c *gin.Context) {
-		lsatInfo := c.Value("LSAT").(*lsat.LsatInfo)
+		lsatInfo := c.Value(lsat.LSAT_HEADER).(*lsat.LsatInfo)
 		if lsatInfo.Type == lsat.LSAT_TYPE_FREE {
 			c.JSON(http.StatusAccepted, gin.H{
 				"code":    http.StatusAccepted,
@@ -123,7 +123,7 @@ func main() {
 		}
 	})
 	router.GET("/protected/2", func(c *gin.Context) {
-		lsatInfo := c.Value("LSAT").(*lsat.LsatInfo)
+		lsatInfo := c.Value(lsat.LSAT_HEADER).(*lsat.LsatInfo)
 		if lsatInfo.Type == lsat.LSAT_TYPE_FREE {
 			c.JSON(http.StatusAccepted, gin.H{
 				"code":    http.StatusAccepted,

@@ -103,7 +103,7 @@ func main() {
 	router.Use(echolsatmiddleware.Handler)
 
 	router.GET("/protected", func(c echo.Context) error {
-		lsatInfo := c.Get("LSAT").(*lsat.LsatInfo)
+		lsatInfo := c.Get(lsat.LSAT_HEADER).(*lsat.LsatInfo)
 		if lsatInfo.Type == lsat.LSAT_TYPE_FREE {
 			return c.JSON(http.StatusAccepted, map[string]interface{}{
 				"code":    http.StatusAccepted,

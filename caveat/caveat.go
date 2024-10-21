@@ -19,7 +19,7 @@ func EncodeCaveat(caveat Caveat) string {
 func DecodeCaveat(caveatString string) (Caveat, error) {
 	splitted := strings.Split(caveatString, "=")
 	if len(splitted) != 2 {
-		return Caveat{}, fmt.Errorf("LSAT does not have the right format: %s", caveatString)
+		return Caveat{}, fmt.Errorf("L402 does not have the right format: %s", caveatString)
 	}
 	return Caveat{Condition: splitted[0], Value: splitted[1]}, nil
 }
